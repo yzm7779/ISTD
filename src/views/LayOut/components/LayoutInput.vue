@@ -1,5 +1,4 @@
 <script setup>
-import { Promotion } from '@element-plus/icons-vue'
 import { ElInput } from 'element-plus'
 import { ref, defineEmits } from 'vue'
 import { defineProps } from 'vue'

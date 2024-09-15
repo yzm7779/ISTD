@@ -1,7 +1,7 @@
 <script setup>
 import { ElImage } from 'element-plus'
 import { ref } from 'vue'
-import LayoutInput from '@/components/LayoutInput.vue'
+import LayoutInput from '@/views/LayOut/components/LayoutInput.vue'
 import LeftBubble from '@/components/LeftBubble.vue'
 import RightBubble from '@/components/RightBubble.vue'
 
@@ -87,10 +87,10 @@ const divUserCount = ref(0)
       <el-scrollbar max-height="400px">
         <div v-for="item in allMessage" :key="item.type">
           <div v-if="item.type === 'User'">
-            <RightBubble :message=item.content />
+            <RightBubble :message="item.content" />
           </div>
           <div v-if="item.type === 'AI'">
-            <LeftBubble :messageLeft=item.content />
+            <LeftBubble :messageLeft="item.content" />
           </div>
         </div>
       </el-scrollbar>

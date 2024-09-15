@@ -1,6 +1,6 @@
 <script setup>
-import RightSidebar from '@/components/RightSidebar.vue'
-import InputContent from '@/components/InputContent.vue'
+import RightSidebar from '@/views/UserCenter/components/RightSidebar.vue'
+import InputContent from '@/views/UserCenter/components/InputContent.vue'
 </script>
 
 <template>

@@ -223,7 +223,12 @@ const registerrule = {
           <Captcha v-model:captchaValue="currentCaptcha" />
         </el-form-item>
         <el-form-item>
-          <el-button class="button" type="primary" auto-insert-space  @click="test">
+          <el-button
+            class="button"
+            type="primary"
+            auto-insert-space
+            @click="test"
+          >
             注册
           </el-button>
         </el-form-item>
