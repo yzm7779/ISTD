@@ -2,6 +2,7 @@
 import { ElInput } from 'element-plus'
 import { ref, defineEmits } from 'vue'
 import { defineProps } from 'vue'
+import { Promotion } from '@element-plus/icons-vue'
 //禁用拖拽
 const props = defineProps({
   customStyle: {

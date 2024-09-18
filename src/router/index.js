@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/index.js'
+import { ElMessage } from 'element-plus'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,7 +15,13 @@ const router = createRouter({
     },
     {
       path: '/homepage',
+      name: 'homepage',
       component: () => import('@/views/LayOut/LayoutChat.vue')
+    },
+    {
+      path: '/doctorfind',
+      nams: 'doctorfind',
+      component: () => import('@/views/LayOut/LayoutDoctor.vue')
     },
     {
       path: '/personalCenter',
@@ -47,6 +55,15 @@ const router = createRouter({
       component: () => import('@/views/NavFunction/HelpFunction.vue')
     }
   ]
+})
+
+router.beforeEach((to) => {
+  const useStore = useUserStore()
+  if (!useStore.token && to.path !== '/login') {
+    ElMessage('请登录以使用该功能')
+    return '/login'
+  }
+  return true
 })
 
 export default router

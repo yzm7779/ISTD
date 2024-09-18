@@ -3,8 +3,15 @@ import instance from '@/utils/request.js'
 
 //注册功能，向数据库传递数据，post中的链接是假的，参数列表应该是真的，下同
 //数据库中的字段也要做调整
-export const userRegisterService = ({ phone, password, repassword, code, certificate, name }) => {
-  return instance.post('/api/reg', {
+export const userRegisterService = ({
+  phone,
+  password,
+  repassword,
+  code,
+  certificate,
+  name
+}) => {
+  return instance.post('/reg', {
     phone,
     password,
     repassword,
@@ -16,7 +23,7 @@ export const userRegisterService = ({ phone, password, repassword, code, certifi
 
 //登录，和数据库中的数据做校验
 export const userLoginService = ({ phone, password, code }) => {
-  return instance.post('/api/login', {
+  return instance.post('/login', {
     phone,
     password,
     code
@@ -39,7 +46,8 @@ export const userUpdateService = ({ id, nickname, email }) => {
 }
 
 //这个是修改头像 先饼着
-export const userUploadAvatarService = (avatar) => instance.patch('/my/update/avatar', { avatar })
+export const userUploadAvatarService = (avatar) =>
+  instance.patch('/my/update/avatar', { avatar })
 
 //修改登录密码，同样饼着
 export const userUpdatePassService = ({ old_pwd, new_pwd, re_pwd }) =>

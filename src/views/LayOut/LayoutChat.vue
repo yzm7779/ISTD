@@ -1,9 +1,11 @@
 <script setup>
-import { ElImage } from 'element-plus'
-import { ref } from 'vue'
+import { ElImage, ElDrawer } from 'element-plus'
+import { ref, computed } from 'vue'
 import LayoutInput from '@/views/LayOut/components/LayoutInput.vue'
 import LeftBubble from '@/components/LeftBubble.vue'
 import RightBubble from '@/components/RightBubble.vue'
+import { useDataStore } from '@/stores/index.js'
+import router from '@/router/index.js'
 
 // 用于存储图片的 URL
 const imageUrl = ref('')
@@ -48,6 +50,31 @@ const inputValue = ref('')
 //存放所有聊天数据
 const allMessage = ref([])
 const divUserCount = ref(0)
+
+//控制左侧弹窗的变量
+const dataStore = useDataStore()
+const isShowDrawer = computed(() => dataStore.sharedData)
+
+const toDoctor = async () => {
+  await router.push('/personalCenter/partner')
+}
+const toFindDoctor = async () => {
+  await router.push('/doctorfind')
+}
+
+const historyTest = ref([
+  { id: 1, name: '历史记录' },
+  { id: 2, name: '历史记录' },
+  { id: 3, name: '历史记录' },
+  { id: 4, name: '历史记录' },
+  { id: 5, name: '历史记录' }
+])
+const historyId = ref(6)
+const addNewHistory = () => {
+  const newHistory = ref({ id: historyId.value, name: '历史记录' })
+  historyTest.value.push(newHistory.value)
+  historyId.value++
+}
 </script>
 
 <template>
@@ -109,6 +136,27 @@ const divUserCount = ref(0)
         marginTop: '40px'
       }"
     />
+
+    <el-drawer
+      v-model="isShowDrawer"
+      title="功能栏"
+      direction="ltr"
+      size="250px"
+      :show-close="false"
+      :with-header="false"
+      class="left-drawer"
+    >
+      <div class="left-drawer-button" @click="toFindDoctor">查找医生</div>
+      <div class="left-drawer-button" @click="toDoctor">我的医生</div>
+      <div class="left-drawer-button" @click="addNewHistory">新增聊天记录</div>
+      <el-menu>
+        <el-menu-item v-for="item in historyTest" :key="item.id">
+          <div class="menu-item">
+            <div class="name-item">{{ item.name + item.id }}</div>
+          </div>
+        </el-menu-item>
+      </el-menu>
+    </el-drawer>
   </div>
 </template>
 
@@ -175,5 +223,36 @@ const divUserCount = ref(0)
     margin-top: 0px;
     background-color: indianred;
   }
+}
+
+.left-drawer {
+  display: flex;
+  .left-drawer-button {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    border-style: dashed;
+    border-width: 1px;
+    border-radius: 8px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-color: gray;
+    font-size: 15px;
+  }
+  .menu-item {
+    display: flex;
+    height: 40px;
+    .name-item {
+      display: flex;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+.el-menu--horizontal {
+  --el-menu-horizontal-height: 40px;
 }
 </style>

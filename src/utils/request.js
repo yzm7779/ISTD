@@ -3,7 +3,7 @@ import router from '@/router/index.js'
 import { useUserStore } from '@/stores/index.js'
 import { ElMessage } from 'element-plus'
 //这里需要接受请求，需要后端和数据库配合 这里先放一些假的
-const baseURL = 'http://big-event-vue-api-t.itheima.net'
+const baseURL = 'localhost:5173'
 
 const instance = axios.create({
   // TODO 1. 基础地址，超时时间

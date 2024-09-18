@@ -1,8 +1,12 @@
 <script setup>
 import { Setting, User } from '@element-plus/icons-vue'
 import router from '@/router/index.js'
-import { inject } from 'vue'
+import { inject, computed, provide, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Connection } from '@element-plus/icons-vue'
+import { useRoute } from 'vue-router'
+import {useDataStore} from '@/stores/index.js'
+
 const toLayout = async () => {
   await router.push('/homepage')
 }
@@ -36,12 +40,30 @@ const decreaseFontSize = () => {
 const resetFontSize = () => {
   fontSize.value = 16
 }
+//只在指定路由中显示的按钮
+const route = useRoute()
+const isHomepage = computed(() => {
+  return route.name === 'doctorfind' || route.name === 'homepage'
+})
+//控制左侧弹窗的变量
+const dataStore = useDataStore()
+const sendIsDrawer = () => {
+  const isShowDrawer = ref(false)
+  console.log(isShowDrawer.value, '导航栏中数据')
+  isShowDrawer.value = true
+  dataStore.setSharedData()
+  console.log(isShowDrawer.value, '导航栏中数据')
+  console.log(dataStore.sharedData, '存储的数据')
+}
 </script>
 
 <template>
   <el-header style="background-color: white; width: 100vw">
     <div class="nav-container">
       <div class="nav-left">
+        <div class="connection-item" v-if="isHomepage" @click="sendIsDrawer">
+          <el-icon><Connection /></el-icon>
+        </div>
         <el-tooltip content="点击前往主页" placement="bottom" effect="light">
           <img
             src="https://i.postimg.cc/7Z3gDBxj/1734672413.jpg"
@@ -141,5 +163,17 @@ const resetFontSize = () => {
 }
 
 .icon-setting {
+}
+
+.connection-item {
+  display: flex;
+  border-width: 1px;
+  border-style: solid;
+  margin-right: 25px;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
 }
 </style>

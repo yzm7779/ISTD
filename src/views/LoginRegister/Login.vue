@@ -1,10 +1,13 @@
 <script setup>
 import { Iphone, Lock, Message, Search, User } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import router from '@/router/index.js'
 import Captcha from '@/views/LoginRegister/components/Captcha.vue'
+import { useUserStore } from '@/stores/index.js'
 const isLogin = ref(true)
 const registerType = ref('doctor')
+import { ElMessage } from 'element-plus'
+import { userLoginService, userRegisterService } from '@/api/user.js'
 
 const toHelp = async () => {
   await router.push('/help')
@@ -94,9 +97,36 @@ const registerrule = {
   ],
   certificate: [
     { required: true, message: '请输入医师证', trigger: 'blur' },
-    { pattern: /^$\d{15}/, message: '医师证必须是15位数字', trigger: 'blur' }
+    { pattern: /^\d{15}$/, message: '医师证必须是15位数字', trigger: 'blur' }
   ],
   name: [{ required: 'true', message: '请输入真实姓名', trigger: 'blur' }]
+}
+const userStore = useUserStore()
+//登录和注册功能实现
+const form = ref()
+const isRegister = ref(false)
+watch(isRegister, () => {
+  loginModel.value = {
+    username: '',
+    password: '',
+    repassword: ''
+  }
+})
+const register = async () => {
+  await form.value.validate()
+  await userRegisterService(registerModel.value)
+  ElMessage({
+    message: '注册成功',
+    type: 'success'
+  })
+  isRegister.value = false
+}
+const login = async () => {
+  await form.value.validate()
+  const res = await userLoginService(loginModel.value)
+  userStore.setToken(res.data.token)
+  ElMessage.success('登录成功')
+  await router.push('/homepage')
 }
 </script>
 
@@ -118,7 +148,7 @@ const registerrule = {
     <el-col :span="6" :offset="3" class="form">
       <!-- 登录表单-->
       <!--由于医师患者登录方式相同，所以不做区分 -->
-      <el-form v-if="isLogin" :model="loginModel" :rules="loginrules">
+      <el-form v-if="isLogin" :model="loginModel" :rules="loginrules" ref="form">
         <el-form-item><h1>欢迎登录</h1></el-form-item>
         <el-form-item prop="phone">
           <el-input
@@ -142,7 +172,11 @@ const registerrule = {
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button class="button" type="primary" auto-insert-space
+          <!-- 引入并使用我们的验证码组件 -->
+          <Captcha v-model:captchaValue="currentCaptcha" />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="button" type="primary" auto-insert-space @click="login"
             >登录</el-button
           >
         </el-form-item>
@@ -227,7 +261,7 @@ const registerrule = {
             class="button"
             type="primary"
             auto-insert-space
-            @click="test"
+            @click="register"
           >
             注册
           </el-button>
