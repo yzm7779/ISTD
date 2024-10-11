@@ -36,11 +36,12 @@ export const userGetInfoService = () => {
   return instance.get('/my/userinfo')
 }
 
-//这个应该是修改个人信息
-export const userUpdateService = ({ id, nickname, email }) => {
-  return instance.put('/my/userinfo', {
-    id,
+//这个是修改个人信息
+export const userUpdateService = ({ nickname, gender, age, email }) => {
+  return instance.post('/updateInf', {
     nickname,
+    gender,
+    age,
     email
   })
 }

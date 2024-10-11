@@ -19,7 +19,7 @@ const props = defineProps({
   <div class="chat-item-user-right">
     <div class="avatar-container-right">
       <div class="message-bubble-right chat-bubble-right">
-        {{ message }}
+        <el-image :src="message" alt="Selected Image" class="pic" fit="contain" />
       </div>
       <div class="message-user-right">
         <div class="username">用户</div>
@@ -56,17 +56,12 @@ const props = defineProps({
       padding: 10px 15px;
       max-width: 600px;
       text-align: left;
-
-      /* 创建聊天气泡的箭头部分 */
-      &::after {
-        content: '';
-        position: absolute;
-        right: -10px; /* 调整箭头的垂直位置 */
-        top: 10px; /* 调整箭头的水平位置 */
-        border-width: 10px 10px 0;
-        border-style: solid;
-        border-color: #66ccff transparent transparent transparent;
-      }
+    }
+    .pic {
+      max-height: 150px;
+      max-width: 150px;
+      width: auto; /* 宽度自适应 */
+      height: auto; /* 高度自适应 */
     }
   }
 }

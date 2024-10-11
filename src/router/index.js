@@ -46,6 +46,7 @@ const router = createRouter({
         },
         {
           path: '/personalCenter/search/:id?',
+          name: 'search',
           component: () => import('@/views/UserCenter/UserSearchHistory.vue')
         }
       ]

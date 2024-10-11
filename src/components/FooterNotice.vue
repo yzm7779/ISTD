@@ -33,7 +33,7 @@ el-footer {
   justify-content: space-between;
   align-items: center;
   padding: 10px 120px;
-  background-color: white;
+  background-color: #66ccff;
   margin-top: 20px;
 }
 

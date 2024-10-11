@@ -11,7 +11,6 @@ import InputContent from '@/views/UserCenter/components/InputContent.vue'
 
 <style scoped lang="scss">
 .main-content {
-  background-color: orange;
   position: relative;
   width: 80%;
   height: 70%;

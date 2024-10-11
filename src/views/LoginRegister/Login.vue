@@ -3,12 +3,11 @@ import { Iphone, Lock, Message, Search, User } from '@element-plus/icons-vue'
 import { ref, watch } from 'vue'
 import router from '@/router/index.js'
 import Captcha from '@/views/LoginRegister/components/Captcha.vue'
-import { useUserStore } from '@/stores/index.js'
+import { ElMessage } from 'element-plus'
+import { useDataStore, useUserStore } from '@/stores/index.js'
+
 const isLogin = ref(true)
 const registerType = ref('doctor')
-import { ElMessage } from 'element-plus'
-import { userLoginService, userRegisterService } from '@/api/user.js'
-
 const toHelp = async () => {
   await router.push('/help')
 }
@@ -28,10 +27,6 @@ const registerModel = ref({
   certificate: '',
   name: ''
 })
-const test = () => {
-  console.log(registerModel.value)
-}
-test()
 
 const loginrules = {
   phone: [
@@ -52,7 +47,7 @@ const loginrules = {
   ],
   code: [
     { required: true, message: '请输入验证码', trigger: 'blur' },
-    { pattern: /^\d{6}$/, message: '验证码必须是6位数字', trigger: 'blur' }
+    { pattern: /^\d{4}$/, message: '验证码必须是4位数字', trigger: 'blur' }
   ]
 }
 
@@ -102,6 +97,7 @@ const registerrule = {
   name: [{ required: 'true', message: '请输入真实姓名', trigger: 'blur' }]
 }
 const userStore = useUserStore()
+const userData = useDataStore()
 //登录和注册功能实现
 const form = ref()
 const isRegister = ref(false)
@@ -113,19 +109,26 @@ watch(isRegister, () => {
   }
 })
 const register = async () => {
-  await form.value.validate()
-  await userRegisterService(registerModel.value)
+  // await form.value.validate()
+  // await userRegisterService(registerModel.value)
   ElMessage({
     message: '注册成功',
     type: 'success'
   })
   isRegister.value = false
+  await userData.setHasLogin()
+  userStore.setRegisterModel(registerModel.value)
+  userStore.setRegisterType(registerType.value)
+  console.log('这是模型的内容：',userStore.registerModel)
+  console.log('这是登录类型的内容：',userStore.registerType)
+  await router.push('/homepage')
 }
 const login = async () => {
-  await form.value.validate()
-  const res = await userLoginService(loginModel.value)
-  userStore.setToken(res.data.token)
+  // await form.value.validate()
+  // const res = await userLoginService(loginModel.value)
+  // userStore.setToken(res.data.token)
   ElMessage.success('登录成功')
+  await userData.setHasLogin()
   await router.push('/homepage')
 }
 </script>
@@ -148,7 +151,12 @@ const login = async () => {
     <el-col :span="6" :offset="3" class="form">
       <!-- 登录表单-->
       <!--由于医师患者登录方式相同，所以不做区分 -->
-      <el-form v-if="isLogin" :model="loginModel" :rules="loginrules" ref="form">
+      <el-form
+        v-if="isLogin"
+        :model="loginModel"
+        :rules="loginrules"
+        ref="form"
+      >
         <el-form-item><h1>欢迎登录</h1></el-form-item>
         <el-form-item prop="phone">
           <el-input
@@ -176,7 +184,11 @@ const login = async () => {
           <Captcha v-model:captchaValue="currentCaptcha" />
         </el-form-item>
         <el-form-item>
-          <el-button class="button" type="primary" auto-insert-space @click="login"
+          <el-button
+            class="button"
+            type="primary"
+            auto-insert-space
+            @click="login"
             >登录</el-button
           >
         </el-form-item>

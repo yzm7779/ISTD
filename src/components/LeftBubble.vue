@@ -22,7 +22,36 @@ const props = defineProps({
       <el-avatar :size="50" :src="squareUrl" shape="square" />
     </div>
     <div class="message-bubble-left chat-bubble-left">
-      {{ messageLeft }}
+      这是您的诊断方案。
+      1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      这是您的诊断方案。
+      1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      这是您的诊断方案。
+      1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
+      1，这是您的诊断方案1，这是您的诊断方案
     </div>
   </div>
 </template>
@@ -42,23 +71,12 @@ const props = defineProps({
   .chat-bubble-left {
     display: inline-block;
     position: relative;
-    background-color: #66ccff;
+    background-color: white;
     border-radius: 10px;
     padding: 10px 15px;
     margin-right: 80px;
     margin-left: 10px;
     width: auto;
-
-    /* 创建聊天气泡的箭头部分 */
-    &::after {
-      content: '';
-      position: absolute;
-      left: -10px; /* 调整箭头的垂直位置 */
-      top: 10px; /* 调整箭头的水平位置 */
-      border-width: 10px 10px 0;
-      border-style: solid;
-      border-color: #66ccff transparent transparent transparent;
-    }
   }
 }
 </style>

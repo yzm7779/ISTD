@@ -5,7 +5,7 @@ import { inject, computed, provide, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Connection } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
-import {useDataStore} from '@/stores/index.js'
+import { useDataStore } from '@/stores/index.js'
 
 const toLayout = async () => {
   await router.push('/homepage')
@@ -16,6 +16,11 @@ const toPersonal = async () => {
 
 const toHelp = async () => {
   await router.push('/help')
+}
+
+const toLogin = async () => {
+  await router.push('/login')
+  console.log('第一次点击按钮的值', isLogin.value)
 }
 
 const props = defineProps({
@@ -48,22 +53,25 @@ const isHomepage = computed(() => {
 //控制左侧弹窗的变量
 const dataStore = useDataStore()
 const sendIsDrawer = () => {
+  if (dataStore.state.hasLogin === false) {
+    ElMessage.error('请登录以使用该功能')
+    return
+  }
   const isShowDrawer = ref(false)
-  console.log(isShowDrawer.value, '导航栏中数据')
   isShowDrawer.value = true
   dataStore.setSharedData()
-  console.log(isShowDrawer.value, '导航栏中数据')
-  console.log(dataStore.sharedData, '存储的数据')
 }
+//设置右上角内容，false为登录/注册按钮，true为个人中心头像和提示
+const isLogin = computed(() => dataStore.state.hasLogin)
 </script>
 
 <template>
   <el-header style="background-color: white; width: 100vw">
     <div class="nav-container">
       <div class="nav-left">
-        <div class="connection-item" v-if="isHomepage" @click="sendIsDrawer">
-          <el-icon><Connection /></el-icon>
-        </div>
+        <!--        <div class="connection-item" v-if="isHomepage" @click="sendIsDrawer">-->
+        <!--          <el-icon><Connection /></el-icon>-->
+        <!--        </div>-->
         <el-tooltip content="点击前往主页" placement="bottom" effect="light">
           <img
             src="https://i.postimg.cc/7Z3gDBxj/1734672413.jpg"
@@ -80,7 +88,10 @@ const sendIsDrawer = () => {
         <el-link :underline="false" class="nav-link">联系我们</el-link>
       </div>
 
-      <div class="nav-right">
+      <div class="nav-right" v-show="!isLogin">
+        <el-button round color="black" @click="toLogin">登录/注册</el-button>
+      </div>
+      <div class="nav-right" v-show="isLogin">
         <div class="message">欢迎使用智影透诊！</div>
         <el-popover
           placement="bottom"

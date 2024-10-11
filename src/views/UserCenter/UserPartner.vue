@@ -5,6 +5,7 @@ import LeftBubble from '@/components/LeftBubble.vue'
 import RightBubble from '@/components/RightBubble.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { ChatDotRound } from '@element-plus/icons-vue'
 
 // 当组件挂载时，根据路由参数选择好友
 onMounted(() => {
@@ -77,7 +78,20 @@ const partnerInformation = ref([
 
 <template>
   <el-scrollbar class="main-content">
-    <div v-if="!selectedId">请选择好友</div>
+    <div
+      v-if="!selectedId"
+      style="
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        margin-top: 25vh;
+      "
+    >
+      <el-icon size="200px" color="lightgray" class="chat-icon"
+        ><ChatDotRound
+      /></el-icon>
+    </div>
     <div v-else>
       <div
         v-for="item in partnerInformation[selectedId - 1].chatHistory"
@@ -92,7 +106,7 @@ const partnerInformation = ref([
       </div>
     </div>
   </el-scrollbar>
-  <InputContent @input="handleInformation" :testId="selectedId" />
+  <InputContent @input="handleInformation" :testId="selectedId" v-if="selectedId" />
   <RightSidebar
     :content="partnerInformation"
     @partnerSelect="handleSelectPartner"
@@ -101,9 +115,14 @@ const partnerInformation = ref([
 
 <style scoped lang="scss">
 .main-content {
-  background-color: orange;
   position: relative;
   width: 80%;
   height: 80%;
+  .chat-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 }
 </style>

@@ -55,7 +55,6 @@ watch(
 .inp {
   position: relative;
   bottom: 0;
-  background-color: lightblue;
   width: 80%;
   height: 20%;
 }

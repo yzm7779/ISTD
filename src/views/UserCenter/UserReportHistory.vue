@@ -26,7 +26,6 @@ import RightSidebar from '@/views/UserCenter/components/RightSidebar.vue'
 
 <style scoped lang="scss">
 .container {
-  background: orange;
   width: 80%;
   height: 100%;
   .img-item {

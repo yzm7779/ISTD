@@ -8,41 +8,42 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['partnerSelect'])
+const emit = defineEmits(['partnerSelect', 'historySelect'])
 const selectId = (id) => {
   emit('partnerSelect', id)
+  emit('historySelect', id)
 }
 </script>
 
 <template>
   <div class="right-container">
     <el-input placeholder="搜索" :prefix-icon="Search"></el-input>
-    <el-menu>
-      <el-menu-item
-        v-for="item in content"
-        :key="item.id"
-        @click="selectId(item.id)"
-      >
-        <div class="menu-item">
+    <el-scrollbar height="95vh">
+      <el-menu>
+        <el-menu-item
+          v-for="item in content"
+          :key="item.id"
+          @click="selectId(item.id)"
+          class="menu-item"
+        >
           <div>
-            <img
-              src="https://i.postimg.cc/7Z3gDBxj/1734672413.jpg"
-              class="pic"
-            />
+            <div>
+              <img
+                src="https://i.postimg.cc/7Z3gDBxj/1734672413.jpg"
+                class="pic"
+              />
+            </div>
+            <div class="name-item">{{ item.name + item.id }}</div>
           </div>
-          <div class="name-item">{{ item.name }}</div>
-        </div>
-      </el-menu-item>
-    </el-menu>
+        </el-menu-item>
+      </el-menu></el-scrollbar
+    >
   </div>
 </template>
 
 <style scoped lang="scss">
-.main-content {
-  background-color: orange;
-}
 .right-container {
-  background-color: lightcoral;
+  background-color: white;
   height: 102.3%;
   width: 200px;
   position: absolute;
@@ -51,10 +52,14 @@ const selectId = (id) => {
   .menu-item {
     display: flex;
     width: 100%;
-    background-color: lightblue;
-    border-style: solid;
-    margin: -20px;
+    border-style: dashed;
+    border-width: 1px;
+    border-radius: 2px;
     padding-right: 40px;
+    margin-top: 2px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
     .pic {
       width: 30%;
       position: absolute;
@@ -67,5 +72,4 @@ const selectId = (id) => {
     }
   }
 }
-
 </style>
