@@ -33,15 +33,27 @@ export const useUserStore = defineStore(
 
     //存放所有记录
     const allHistory = ref([])
-    //记录的个数
-    const historyCnt = ref(1)
+    const deleteHistory = () => {
+      allHistory.value = []
+    }
+
     //增加聊天记录
     const addHistory = (newVal) => {
-      const temp = historyCnt.value
-      allHistory.value.push({ id: temp, chat: newVal })
+      const temp = Date.now()
+      const date = new Date(temp) // 创建一个 Date 对象
+
+      // 格式化输出日期和时间
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0') // 月份从0开始，需要加1
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+
+      const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+      allHistory.value.push({ id: formattedDateTime, chat: newVal })
       console.log('这是添加的值', newVal)
       console.log('这是所有的值', allHistory.value)
-      historyCnt.value++
     }
 
     return {
@@ -55,6 +67,7 @@ export const useUserStore = defineStore(
       setUser,
       setRegisterModel,
       setRegisterType,
+      deleteHistory,
       addHistory
     }
   },

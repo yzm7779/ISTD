@@ -20,7 +20,7 @@ const router = createRouter({
     },
     {
       path: '/doctorfind',
-      nams: 'doctorfind',
+      name: 'doctorfind',
       component: () => import('@/views/LayOut/LayoutDoctor.vue')
     },
     {
@@ -58,13 +58,13 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to) => {
-  const useStore = useUserStore()
-  if (!useStore.token && to.path !== '/login') {
-    ElMessage('请登录以使用该功能')
-    return '/login'
-  }
-  return true
-})
+// router.beforeEach((to) => {
+//   const useStore = useUserStore()
+//   if (!useStore.token && to.path !== '/login') {
+//     ElMessage('请登录以使用该功能')
+//     return '/login'
+//   }
+//   return true
+// })
 
 export default router

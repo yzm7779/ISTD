@@ -42,22 +42,21 @@ const informationRule = {
     { pattern: /^\d{15}$/, message: '医师证必须是15位数字', trigger: 'blur' }
   ],
   nickname: [
-    { required: 'true', message: '请输入昵称', trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        const length = value.length
-        // 检查是否是4-12位的字母或数字
-        if (/^[a-zA-Z0-9]{4,12}$/.test(value)) {
-          return callback() // 合格
-        }
-        // 检查是否是2-3位汉字
-        if (/^[\u4e00-\u9fa5]{2,3}$/.test(value)) {
-          return callback() // 合格
-        }
-        callback(new Error('昵称应为4到12个字母或数字，或2到3个汉字'))
-      },
-      trigger: 'blur'
-    }
+    { required: 'true', message: '请输入昵称', trigger: 'blur' }
+    // {
+    //   validator: (rule, value, callback) => {
+    //     // 检查是否是4-12位的字母或数字
+    //     if (/^[a-zA-Z0-9]{4,12}$/.test(value)) {
+    //       return callback() // 合格
+    //     }
+    //     // 检查是否是2-3位汉字
+    //     if (/^[\u4e00-\u9fa5]{2,3}$/.test(value)) {
+    //       return callback() // 合格
+    //     }
+    //     callback(new Error('昵称应为4到12个字母或数字，或2到3个汉字'))
+    //   },
+    //   trigger: 'blur'
+    // }
   ],
   gender: [
     { required: 'true', message: '请输入性别', trigger: 'blur' },
@@ -101,13 +100,6 @@ const informationRule = {
   ]
 }
 const profile = ref('修改个人信息请点击按钮')
-const toggleEdit = () => {
-  if (isEditing.value) {
-    // 保存修改
-    // 可以在这里进行数据提交，比如发送到服务器
-  }
-  isEditing.value = !isEditing.value
-}
 </script>
 
 <template>
@@ -145,7 +137,7 @@ const toggleEdit = () => {
         </el-form-item>
         <el-form-item label="电话号码：" prop="tel">
           <el-input
-            :disabled="isEditing"
+            disabled
             placeholder="请输入电话号码"
             v-model="userInformation.phone"
           >
@@ -191,7 +183,11 @@ const toggleEdit = () => {
       <div class="profile">
         <div class="header">
           <h1>个人简介</h1>
-          <el-button type="default" @click="toggleEdit">
+          <el-button
+            type="default"
+            @click="changeEditing"
+            :disabled="hasValidationError"
+          >
             {{ !isEditing ? '保存修改内容' : '修改个人简介' }}
           </el-button>
         </div>

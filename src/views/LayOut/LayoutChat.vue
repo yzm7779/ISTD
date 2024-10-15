@@ -1,5 +1,6 @@
 <script setup>
 import { ElImage, ElDrawer, ElMessage } from 'element-plus'
+import { ChatDotRound } from '@element-plus/icons-vue'
 import { ref, computed, onMounted } from 'vue'
 import LayoutInput from '@/views/LayOut/components/LayoutInput.vue'
 import LeftBubble from '@/components/LeftBubble.vue'
@@ -8,6 +9,11 @@ import { useDataStore } from '@/stores/index.js'
 import { useUserStore } from '@/stores/index.js'
 import { useChatHistoryStore } from '@/stores/modules/chat.js'
 import router from '@/router/index.js'
+
+// onMounted(() => {
+//   userStore.deleteHistory()
+// })
+
 //处理加载特效
 const loading = ref(false)
 // 用于存储图片的 URL
@@ -23,14 +29,18 @@ const selectImg = () => {
 }
 //新建对话功能
 const newChat = () => {
+  //userStore.deleteHistory()
   if (dataStore.state.hasLogin === false) {
     isShow.value = true
     allMessage.value = []
     return
   }
   isShow.value = true
-  userStore.addHistory(allMessage.value)
+  if (isHistoryChat.value === false) {
+    userStore.addHistory(allMessage.value)
+  }
   allMessage.value = []
+  isHistoryChat.value = false
 }
 
 // 处理文件选择的变化
@@ -100,15 +110,19 @@ const addNewHistory = () => {
 // }
 //处理历史记录
 const userStore = useUserStore()
-const toHistory = (newVal) => {
+const toHistory = (newVal, id) => {
+  isHistoryChat.value = true
   isShow.value = false
   allMessage.value = newVal
+  title.value = id
 }
 //控制左侧边栏是否显示
-const sidebarVisible = ref(true)
+const sidebarVisible = ref()
 const toggleSidebar = () => {
   sidebarVisible.value = !sidebarVisible.value
 }
+const isHistoryChat = ref(false)
+const title = ref()
 </script>
 
 <template>
@@ -118,21 +132,26 @@ const toggleSidebar = () => {
       <div class="sidebar-content">
         <el-menu class="left-sidebar" default-active="1">
           <el-menu-item
+            class="left-sidebar-item"
             v-for="item in userStore.allHistory"
             :key="item.id"
-            @click="toHistory(item.chat)"
+            @click="toHistory(item.chat, item.id)"
           >
             <div class="menu-item">
-              <div class="name-item">历史记录{{ item.id }}</div>
+              <el-icon class="left-icon"><ChatDotRound /></el-icon>
+              <div class="name-item">{{ item.id }}</div>
             </div>
           </el-menu-item>
         </el-menu>
       </div>
-
     </el-col>
     <!--主内容页面 -->
     <el-col :span="sidebarVisible ? 20 : 24">
-      <div class="toggle-button" @click="toggleSidebar">
+      <div
+        class="toggle-button"
+        @click="toggleSidebar"
+        v-show="dataStore.state.hasLogin === true"
+      >
         {{ sidebarVisible ? '<' : '>' }}
       </div>
       <div class="container">
@@ -168,6 +187,7 @@ const toggleSidebar = () => {
 
         <!-- 这是发送内容以后展示的部分 -->
         <div class="chat-app" v-show="!isShow">
+          {{title}}
           <el-scrollbar max-height="400px" v-loading="loading">
             <div v-for="item in allMessage" :key="item.id">
               <RightBubble :message="item.imageurl" />
@@ -186,7 +206,7 @@ const toggleSidebar = () => {
         </div>
         <div v-show="!isShow" class="chat-button">
           <el-button @click="selectImg">添加图片</el-button>
-          <el-button type="primary" @click="newChat">新建对话</el-button>
+          <el-button type="primary" @click="newChat()">新建对话</el-button>
         </div>
 
         <!--    &lt;!&ndash; 输入框 &ndash;&gt;-->
@@ -328,14 +348,26 @@ const toggleSidebar = () => {
     overflow-y: auto; /* 开启垂直滚动条 */
     .left-sidebar {
       height: 100vh;
-      .menu-item {
-        display: flex;
-        height: 40px;
-        .name-item {
+      .left-sidebar-item {
+        justify-content: center;
+        .left-icon {
+          top: 10px;
+        }
+        .menu-item {
+          border-style: solid;
+          border-width: 1.5px;
+          border-radius: 4px;
+          border-color: gray;
           display: flex;
-          text-align: center;
-          justify-content: center;
-          align-items: center;
+          height: 40px;
+          padding-left: 10px;
+          padding-right: 10px;
+          .name-item {
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+          }
         }
       }
     }
