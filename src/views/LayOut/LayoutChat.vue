@@ -1,7 +1,7 @@
 <script setup>
-import { ElImage, ElDrawer, ElMessage } from 'element-plus'
-import { ChatDotRound } from '@element-plus/icons-vue'
-import { ref, computed, onMounted } from 'vue'
+import { ElImage, ElDrawer, ElMessage, ElDialog } from 'element-plus'
+import { ChatDotRound, Delete } from '@element-plus/icons-vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import LayoutInput from '@/views/LayOut/components/LayoutInput.vue'
 import LeftBubble from '@/components/LeftBubble.vue'
 import RightBubble from '@/components/RightBubble.vue'
@@ -11,7 +11,9 @@ import { useChatHistoryStore } from '@/stores/modules/chat.js'
 import router from '@/router/index.js'
 
 // onMounted(() => {
-//   userStore.deleteHistory()
+//   if (allMessage.value.length === 0) {
+//     loading.value = false
+//   }
 // })
 
 //处理加载特效
@@ -28,29 +30,52 @@ const selectImg = () => {
   isShow.value = false
 }
 //新建对话功能
-const newChat = () => {
-  //userStore.deleteHistory()
+// 等待直到变量被赋值
+const waitForValueChange = () => {
+  return new Promise((resolve) => {
+    // 使用 watch 监测 confirm
+    watch(confirm, (newVal, oldVal) => {
+      if (newVal === oldVal || newVal !== oldVal) {
+        resolve()
+      }
+    })
+  })
+}
+const newChat = async () => {
   if (dataStore.state.hasLogin === false) {
-    isShow.value = true
-    allMessage.value = []
+    dialogVisible.value = true
     return
   }
   isShow.value = true
-  if (isHistoryChat.value === false) {
+  if (isHistoryChat.value === false && dataStore.state.hasLogin === true) {
+    //判斷是新增的記錄還是在原有歷史記錄上新增內容
     userStore.addHistory(allMessage.value)
   }
   allMessage.value = []
   isHistoryChat.value = false
 }
-
+const cancelNewChat = () => {
+  dialogVisible.value = false
+}
+const confirmNewChat = () => {
+  dialogVisible.value = false
+  isShow.value = true
+}
+const dialogVisible = ref(false)
+const confirm = ref(null)
 // 处理文件选择的变化
-const handleFileChange = (event) => {
+const handleFileChange = async (event) => {
+  let temp = allMessage.value.length
   const file = event.target.files[0]
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
       imageUrl.value = e.target.result
-      allMessage.value.push({ id: divUserCount, imageurl: imageUrl.value })
+      allMessage.value.push({
+        id: divUserCount.value.toString() + 'picture',
+        message: imageUrl.value
+      })
+      console.log(allMessage.value)
       divUserCount.value++
       loading.value = false
     }
@@ -60,24 +85,20 @@ const handleFileChange = (event) => {
 
 //接受子组件的变量
 const isShow = ref(true)
-// const handleInput = (newVal) => {
-//   isShow.value = !newVal
-// }
-// //处理发送的内容
-// const handleSend = (inputMessage) => {
-//   inputValue.value = inputMessage
-//   if (inputValue.value.trim()) {
-//     allMessage.value.push({ type: 'User', content: inputValue.value })
-//     divUserCount.value++
-//
-//     if (divUserCount.value === 3) {
-//       allMessage.value.push({ type: 'AI', content: inputValue.value })
-//       allMessage.value.push({ type: 'AI', content: inputValue.value })
-//       divUserCount.value = 0
-//     }
-//   }
-// }
-// const inputValue = ref('')
+const handleInput = (newVal) => {
+  isShow.value = false
+}
+//处理发送的内容
+const handleSend = (inputMessage) => {
+  inputValue.value = inputMessage
+  allMessage.value.push({
+    id: divUserCount.value.toString() + 'message',
+    message: inputValue.value
+  })
+  divUserCount.value++
+  console.log(allMessage.value)
+}
+const inputValue = ref('')
 
 //存放所有聊天数据
 const allMessage = ref([])
@@ -116,13 +137,38 @@ const toHistory = (newVal, id) => {
   allMessage.value = newVal
   title.value = id
 }
+
+//侧边栏中的小删除图标
+const deleteChatById = (itemId) => {
+  console.log(userStore.allHistory)
+  console.log('deleteChatById', itemId)
+  chatDialogVisible.value = true
+  itemToDelete.value = itemId
+}
+const itemToDelete = ref('')
+const cancelDelete = () => {
+  console.log('cancelDelete', itemToDelete)
+  itemToDelete.value = ''
+  chatDialogVisible.value = false
+}
+const confirmDelete = () => {
+  console.log('confirmDelete', itemToDelete)
+  userStore.deleteHistoryById(itemToDelete)
+  itemToDelete.value = ''
+  chatDialogVisible.value = false
+  allMessage.value = []
+  isShow.value = true
+}
+
 //控制左侧边栏是否显示
-const sidebarVisible = ref()
+const sidebarVisible = ref(dataStore.state.hasLogin)
 const toggleSidebar = () => {
   sidebarVisible.value = !sidebarVisible.value
 }
+//判断当前聊天是否为历史记录
 const isHistoryChat = ref(false)
 const title = ref()
+const chatDialogVisible = ref(false)
 </script>
 
 <template>
@@ -131,15 +177,41 @@ const title = ref()
     <el-col :span="sidebarVisible ? 4 : 0" class="sidebar">
       <div class="sidebar-content">
         <el-menu class="left-sidebar" default-active="1">
+          <div class="left-drawer-button" @click="toFindDoctor">查找医生</div>
+          <div class="left-drawer-button" @click="toDoctor">我的医生</div>
           <el-menu-item
             class="left-sidebar-item"
             v-for="item in userStore.allHistory"
             :key="item.id"
-            @click="toHistory(item.chat, item.id)"
           >
             <div class="menu-item">
-              <el-icon class="left-icon"><ChatDotRound /></el-icon>
-              <div class="name-item">{{ item.id }}</div>
+              <el-icon class="left-icon" size="10px"><ChatDotRound /></el-icon>
+              <div class="name-item" @click="toHistory(item.chat, item.id)">
+                {{ item.id }}
+              </div>
+              <el-icon
+                class="left-icon"
+                size="10px"
+                @click="deleteChatById(item.id)"
+                ><Delete
+              /></el-icon>
+            </div>
+            <div class="dialog">
+              <el-dialog
+                title="温馨提示"
+                v-model="chatDialogVisible"
+                width="500"
+                class="dialog-change"
+                :show-close="false"
+              >
+                <span>是否确认删除历史记录?（删除后将无法恢复）</span>
+                <template #footer>
+                  <el-button @click="cancelDelete">取消</el-button>
+                  <el-button type="primary" @click="confirmDelete"
+                    >确认</el-button
+                  >
+                </template>
+              </el-dialog>
             </div>
           </el-menu-item>
         </el-menu>
@@ -171,11 +243,6 @@ const title = ref()
             <p class="word">上传图片</p>
           </el-button>
         </div>
-        <!--    &lt;!&ndash; 显示已选择的图片 &ndash;&gt;-->
-        <!--    <div v-if="imageUrl" class="image-preview" v-show="isShow">-->
-        <!--      <img :src="imageUrl" alt="选中的图片" />-->
-        <!--    </div>-->
-
         <!-- 文件输入框，隐藏在页面上 -->
         <input
           type="file"
@@ -186,68 +253,50 @@ const title = ref()
         />
 
         <!-- 这是发送内容以后展示的部分 -->
-        <div class="chat-app" v-show="!isShow">
-          {{title}}
+        <div class="chat-app" v-show="!isShow && allMessage.length !== 0">
+          {{ title }}
           <el-scrollbar max-height="400px" v-loading="loading">
             <div v-for="item in allMessage" :key="item.id">
-              <RightBubble :message="item.imageurl" />
+              <RightBubble :message="item" />
               <LeftBubble />
             </div>
-
-            <!--        <div v-for="item in allMessage" :key="item.type">-->
-            <!--          <div v-if="item.type === 'User'">-->
-            <!--            <RightBubble :message="item.content" />-->
-            <!--          </div>-->
-            <!--          <div v-if="item.type === 'AI'">-->
-            <!--            <LeftBubble :messageLeft="item.content" />-->
-            <!--          </div>-->
-            <!--        </div>-->
           </el-scrollbar>
+        </div>
+        <div v-show="!isShow && allMessage.length === 0" class="temp-div">
+          <el-icon class="temp-icon" size="200" color="gray"
+            ><ChatDotRound
+          /></el-icon>
+          <div class="temp-content">添加图片或输入内容以开始聊天</div>
         </div>
         <div v-show="!isShow" class="chat-button">
           <el-button @click="selectImg">添加图片</el-button>
           <el-button type="primary" @click="newChat()">新建对话</el-button>
         </div>
+        <!--        游客模式下的新增对话提示-->
+        <el-dialog v-model="dialogVisible" title="提示">
+          <span>游客模式下新增对话会覆盖当前对话，是否继续操作？</span>
+          <template #footer>
+            <el-button @click="cancelNewChat">取消</el-button>
+            <el-button type="primary" @click="confirmNewChat">确定</el-button>
+          </template>
+        </el-dialog>
 
-        <!--    &lt;!&ndash; 输入框 &ndash;&gt;-->
-        <!--    <LayoutInput-->
-        <!--      @input="handleInput"-->
-        <!--      @send="handleSend"-->
-        <!--      :customStyle="{-->
-        <!--        width: '60%',-->
-        <!--        top: '360px',-->
-        <!--        flex: '2',-->
-        <!--        display: 'flex',-->
-        <!--        height: '10px',-->
-        <!--        marginTop: '40px'-->
-        <!--      }"-->
-        <!--    />-->
+        <!-- 输入框 -->
+        <LayoutInput
+          @input="handleInput"
+          @send="handleSend"
+          :customStyle="{
+            width: '60%',
+            top: '360px',
+            flex: '1',
+            display: 'flex',
+            height: '10px',
+            marginTop: '40px'
+          }"
+        />
       </div>
     </el-col>
   </el-row>
-  <!--  <el-drawer-->
-  <!--    v-model="isShowDrawer"-->
-  <!--    title="历史记录"-->
-  <!--    direction="ltr"-->
-  <!--    size="250px"-->
-  <!--    :show-close="false"-->
-  <!--    class="left-drawer"-->
-  <!--  >-->
-  <!--    &lt;!&ndash;      <div class="left-drawer-button" @click="toFindDoctor">查找医生</div>&ndash;&gt;-->
-  <!--    &lt;!&ndash;      <div class="left-drawer-button" @click="toDoctor">我的医生</div>&ndash;&gt;-->
-  <!--    &lt;!&ndash;      <div class="left-drawer-button" @click="addNewHistory">新增聊天记录</div>&ndash;&gt;-->
-  <!--    <el-menu>-->
-  <!--      <el-menu-item-->
-  <!--        v-for="item in userStore.allHistory"-->
-  <!--        :key="item.id"-->
-  <!--        @click="toHistory(item.chat)"-->
-  <!--      >-->
-  <!--        <div class="menu-item">-->
-  <!--          <div class="name-item">历史记录{{item.id }}</div>-->
-  <!--        </div>-->
-  <!--      </el-menu-item>-->
-  <!--    </el-menu>-->
-  <!--  </el-drawer>-->
 </template>
 
 <style scoped lang="scss">
@@ -304,7 +353,7 @@ const title = ref()
   }
 
   .chat-app {
-    flex: 9;
+    flex: 10;
     justify-content: center;
     align-items: center;
     height: 95%;
@@ -313,6 +362,7 @@ const title = ref()
     margin-bottom: 5%;
   }
   .chat-button {
+    flex: 0.1;
     position: relative;
     bottom: 40px;
   }
@@ -320,20 +370,20 @@ const title = ref()
 
 .left-drawer {
   display: flex;
-  .left-drawer-button {
-    display: flex;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    border-style: dashed;
-    border-width: 1px;
-    border-radius: 8px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-color: gray;
-    font-size: 15px;
-  }
+}
+.left-drawer-button {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  border-style: dashed;
+  border-width: 1px;
+  border-radius: 8px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-color: gray;
+  font-size: 15px;
 }
 .el-menu--horizontal {
   --el-menu-horizontal-height: 40px;
@@ -343,6 +393,7 @@ const title = ref()
   //background-color: #f0f2f5;
   transition: width 0.3s;
   position: relative; /* 确保相对定位 */
+  width: 200px;
   .sidebar-content {
     height: calc(100vh); /* 设置高度，减去其他元素，如header的高度 */
     overflow-y: auto; /* 开启垂直滚动条 */
@@ -351,7 +402,7 @@ const title = ref()
       .left-sidebar-item {
         justify-content: center;
         .left-icon {
-          top: 10px;
+          top: 15px;
         }
         .menu-item {
           border-style: solid;
@@ -360,8 +411,6 @@ const title = ref()
           border-color: gray;
           display: flex;
           height: 40px;
-          padding-left: 10px;
-          padding-right: 10px;
           .name-item {
             display: flex;
             text-align: center;
@@ -407,5 +456,45 @@ const title = ref()
   align-items: center;
   cursor: pointer;
   padding-left: 5px;
+}
+.temp-div {
+  height: 70vh;
+  display: grid;
+  grid-template-rows: auto auto; /* 两行 */
+  place-items: center; /* 横向和垂直都居中 */
+  .temp-icon {
+    height: 70vh;
+    flex: 6;
+  }
+  .temp-content {
+    flex: 1;
+    font-size: 20px;
+    color: gray;
+  }
+}
+</style>
+<style lang="scss">
+.dialog-change {
+  padding: 0;
+  border-radius: 5px;
+  .el-dialog__header {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: cornflowerblue;
+    justify-items: center;
+    align-items: center;
+    .el-dialog__title {
+      padding-left: 10px;
+      font-size: 18px;
+      color: white;
+    }
+  }
+  .el-dialog__body {
+    text-align: center;
+    font-size: 18px;
+  }
+  .el-dialog__footer {
+    padding-top: 2px;
+  }
 }
 </style>

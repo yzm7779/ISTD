@@ -20,10 +20,6 @@ const changeIsSend = () => {
   emit('send', mainInput.value)
   mainInput.value = ''
 }
-const addNewChat = () => {
-  isSend.value = false
-  emit('input', isSend.value)
-}
 
 const mainInput = ref('')
 </script>
@@ -43,12 +39,6 @@ const mainInput = ref('')
         <el-icon><Promotion /></el-icon>
       </el-tooltip>
     </div>
-    <span style="padding-top: 4px; margin: 0 5px">|</span>
-    <el-tooltip content="新增对话" placement="bottom" effect="light">
-      <div style="padding-top: 1px; font-size: 20px" @click="addNewChat">
-        ＋
-      </div>
-    </el-tooltip>
   </div>
 </template>
 

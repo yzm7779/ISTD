@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, toRefs, defineProps } from 'vue'
+import { reactive, toRefs, defineProps, computed } from 'vue'
 
 const state = reactive({
   squareUrl:
@@ -9,17 +9,25 @@ const { squareUrl } = toRefs(state)
 
 const props = defineProps({
   message: {
-    type: String,
+    type: {},
     required: true
   }
 })
+const target = computed(() => props.message.id.slice(-7))
 </script>
 
 <template>
   <div class="chat-item-user-right">
     <div class="avatar-container-right">
       <div class="message-bubble-right chat-bubble-right">
-        <el-image :src="message" alt="Selected Image" class="pic" fit="contain" />
+        <el-image
+          :src="message.message"
+          alt="Selected Image"
+          class="pic"
+          fit="contain"
+          v-show="target === 'picture'"
+        />
+        <div v-show="target === 'message'">{{ message.message }}</div>
       </div>
       <div class="message-user-right">
         <div class="username">用户</div>

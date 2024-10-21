@@ -36,6 +36,15 @@ export const useUserStore = defineStore(
     const deleteHistory = () => {
       allHistory.value = []
     }
+    const deleteHistoryById = (id) => {
+      console.log(id)
+      console.log('删除前', allHistory.value)
+      id = id.value
+      const test = allHistory.value.filter((item) => item.id !== id)
+      if (test.length === allHistory.value.length) console.log('哈哈哈')
+      allHistory.value = allHistory.value.filter((item) => item.id !== id)
+      console.log('删除后', allHistory.value)
+    }
 
     //增加聊天记录
     const addHistory = (newVal) => {
@@ -68,6 +77,7 @@ export const useUserStore = defineStore(
       setRegisterModel,
       setRegisterType,
       deleteHistory,
+      deleteHistoryById,
       addHistory
     }
   },

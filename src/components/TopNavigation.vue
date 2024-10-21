@@ -87,7 +87,7 @@ const isLogin = computed(() => dataStore.state.hasLogin)
         </el-link>
         <el-link :underline="false" class="nav-link">联系我们</el-link>
       </div>
-
+      <span class="word">遇到问题请先尝试刷新网页</span>
       <div class="nav-right" v-show="!isLogin">
         <el-button round color="black" @click="toLogin">登录/注册</el-button>
       </div>
@@ -186,5 +186,9 @@ const isLogin = computed(() => dataStore.state.hasLogin)
   height: 20px;
   align-items: center;
   justify-content: center;
+}
+.word {
+  color: lightgray;
+  font-size: 15px;
 }
 </style>
