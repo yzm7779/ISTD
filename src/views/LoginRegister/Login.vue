@@ -5,6 +5,7 @@ import router from '@/router/index.js'
 import Captcha from '@/views/LoginRegister/components/Captcha.vue'
 import { ElMessage } from 'element-plus'
 import { useDataStore, useUserStore } from '@/stores/index.js'
+import axios from 'axios'
 
 const isLogin = ref(true)
 const registerType = ref('doctor')
@@ -108,28 +109,66 @@ watch(isRegister, () => {
     repassword: ''
   }
 })
+//注册接口
 const register = async () => {
-  // await form.value.validate()
-  // await userRegisterService(registerModel.value)
-  ElMessage({
-    message: '注册成功',
-    type: 'success'
-  })
+  // try {
+  //   const registerData = {
+  //     phone: registerModel.value.phone,
+  //     password: registerModel.value.password,
+  //     repassword: registerModel.value.repassword,
+  //     code: registerModel.value.code,
+  //     role: registerType.value === 'doctor' ? 'doctor' : 'patient'
+  //   }
+  //
+  //   // 如果是医生注册，需要额外的字段
+  //   if (registerType.value === 'doctor') {
+  //     registerData.certificate = registerModel.value.certificate
+  //     registerData.name = registerModel.value.name
+  //   }
+  //
+  //   const response = await axios.post('/register/', registerData)
+  //
+  //   if (response.status === 201) {
+  //     console.log('注册成功', response.data)
+  ElMessage.success('注册成功')
   isRegister.value = false
   await userData.setHasLogin()
   userStore.setRegisterModel(registerModel.value)
   userStore.setRegisterType(registerType.value)
-  console.log('这是模型的内容：',userStore.registerModel)
-  console.log('这是登录类型的内容：',userStore.registerType)
-  await router.push('/homepage')
+  // 注册成功后重定向到登录页面
+  await router.push('/homepage/')
+  //   }
+  // } catch (error) {
+  //   ElMessage.error('注册失败')
+  //   console.error('注册失败', error.response?.data || error)
+  // }
+  // await form.value.validate()
+  // await userRegisterService(registerModel.value)
 }
+//登录接口
 const login = async () => {
+  // try {
+  //   const response = await axios.post('/login/', {
+  //     phone: loginModel.value.phone,
+  //     password: loginModel.value.password,
+  //     code: loginModel.value.code
+  //   })
+  //
+  //   if (response.status === 200) {
+  //     console.log('登录成功', response.data)
+  //     // 登录成功后保存token并重定向
+  //     localStorage.setItem('token', response.data.token)
+  ElMessage.success('登录成功')
+  await userData.setHasLogin()
+  await router.push('/homepage/') // 登录成功后的页面
+  //   }
+  // } catch (error) {
+  //   ElMessage.error('登录失败')
+  //   console.error('登录失败', error.response?.data || error)
+  // }
   // await form.value.validate()
   // const res = await userLoginService(loginModel.value)
   // userStore.setToken(res.data.token)
-  ElMessage.success('登录成功')
-  await userData.setHasLogin()
-  await router.push('/homepage')
 }
 </script>
 

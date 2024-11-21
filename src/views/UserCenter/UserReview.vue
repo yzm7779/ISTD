@@ -5,7 +5,6 @@ import InputContent from '@/views/UserCenter/components/InputContent.vue'
 
 <template>
   <div class="main-content">我是 我的评价</div>
-  <InputContent/>
   <RightSidebar />
 </template>
 

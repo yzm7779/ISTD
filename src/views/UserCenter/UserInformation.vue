@@ -4,6 +4,8 @@ import router from '@/router/index.js'
 import { useDataStore, useUserStore } from '@/stores/index.js'
 import { ElMessage } from 'element-plus'
 import { Back } from '@element-plus/icons-vue'
+import ToHomepage from '@/components/ToHomepage.vue'
+import RightBubble from '@/views/LayOut/components/RightBubble.vue'
 
 onMounted(() => {
   console.log(registerType.value)
@@ -102,18 +104,12 @@ const informationRule = {
   ]
 }
 const profile = ref('修改个人信息请点击按钮')
-const toHome = async () => {
-  await router.push('/homepage')
-}
 </script>
 
 <template>
   <el-row class="user-info-container">
     <el-col :span="12">
-      <div style="align-items: center" @click="toHome">
-        <el-icon color="gray" size="15px"><Back /></el-icon>
-        <span class="back-button">点击返回主页</span>
-      </div>
+      <ToHomepage />
       <el-form
         class="content-section"
         :model="userInformation"
@@ -218,20 +214,13 @@ const toHome = async () => {
 <style scoped lang="scss">
 .user-info-container {
   display: flex;
-  .back-button {
-    color: gray;
-    font-size: 15px;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-  }
 
   .content-section {
     display: grid;
     justify-content: center;
     align-items: center;
     text-align: left;
-    margin-top: 10vh;
+    margin-top: 20vh;
     .inf {
       margin: 4px 0;
     }

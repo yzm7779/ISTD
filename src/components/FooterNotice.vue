@@ -25,10 +25,10 @@ el-footer {
   bottom: 0;
   left: 0;
   padding: 10px 20px;
-  box-shadow: none;
 }
 
 .footer-container {
+  border-radius: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;

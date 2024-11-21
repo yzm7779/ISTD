@@ -1,8 +1,8 @@
 <script setup>
 import RightSidebar from '@/views/UserCenter/components/RightSidebar.vue'
 import InputContent from '@/views/UserCenter/components/InputContent.vue'
-import LeftBubble from '@/components/LeftBubble.vue'
-import RightBubble from '@/components/RightBubble.vue'
+import LeftBubble from '@/views/LayOut/components/LeftBubble.vue'
+import RightBubble from '@/views/LayOut/components/RightBubble.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChatHistoryStore } from '@/stores/modules/chat.js'
@@ -117,11 +117,6 @@ onMounted(() => {
       </div>
     </div>
   </el-scrollbar>
-  <InputContent
-    @input="handleInformation"
-    :testId="selectedId"
-    v-if="selectedId"
-  />
   <RightSidebar
     :content="historyInformation"
     @historySelect="handleSelectHistory"

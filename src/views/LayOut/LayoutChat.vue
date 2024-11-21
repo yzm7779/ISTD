@@ -3,8 +3,8 @@ import { ElImage, ElDrawer, ElMessage, ElDialog } from 'element-plus'
 import { ChatDotRound, Delete } from '@element-plus/icons-vue'
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import LayoutInput from '@/views/LayOut/components/LayoutInput.vue'
-import LeftBubble from '@/components/LeftBubble.vue'
-import RightBubble from '@/components/RightBubble.vue'
+import LeftBubble from '@/views/LayOut/components/LeftBubble.vue'
+import RightBubble from '@/views/LayOut/components/RightBubble.vue'
 import { useDataStore } from '@/stores/index.js'
 import { useUserStore } from '@/stores/index.js'
 import { useChatHistoryStore } from '@/stores/modules/chat.js'
@@ -185,13 +185,13 @@ const chatDialogVisible = ref(false)
             :key="item.id"
           >
             <div class="menu-item">
-              <el-icon class="left-icon" size="10px"><ChatDotRound /></el-icon>
+              <el-icon class="left-icon" size="15px"><ChatDotRound /></el-icon>
               <div class="name-item" @click="toHistory(item.chat, item.id)">
                 {{ item.id }}
               </div>
               <el-icon
                 class="left-icon"
-                size="10px"
+                size="15px"
                 @click="deleteChatById(item.id)"
                 ><Delete
               /></el-icon>
@@ -255,7 +255,7 @@ const chatDialogVisible = ref(false)
         <!-- 这是发送内容以后展示的部分 -->
         <div class="chat-app" v-show="!isShow && allMessage.length !== 0">
           {{ title }}
-          <el-scrollbar max-height="400px" v-loading="loading">
+          <el-scrollbar max-height="500px" v-loading="loading">
             <div v-for="item in allMessage" :key="item.id">
               <RightBubble :message="item" />
               <LeftBubble />
@@ -360,6 +360,11 @@ const chatDialogVisible = ref(false)
     width: 800px;
     margin-top: 0;
     margin-bottom: 5%;
+    border-style: solid;
+    border-width: 1.5px;
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
   .chat-button {
     flex: 0.1;
@@ -402,7 +407,9 @@ const chatDialogVisible = ref(false)
       .left-sidebar-item {
         justify-content: center;
         .left-icon {
-          top: 15px;
+          top: 12px;
+          margin-right: 8px;
+          margin-left: 8px;
         }
         .menu-item {
           border-style: solid;
@@ -411,6 +418,8 @@ const chatDialogVisible = ref(false)
           border-color: gray;
           display: flex;
           height: 40px;
+          padding-left: 10px;
+          padding-right: 10px;
           .name-item {
             display: flex;
             text-align: center;

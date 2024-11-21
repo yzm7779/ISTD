@@ -24,6 +24,17 @@ const router = createRouter({
       component: () => import('@/views/LayOut/LayoutDoctor.vue')
     },
     {
+      path: '/article',
+      name: 'article',
+      component: () => import('@/views/NavFunction/LayoutArticle.vue')
+    },
+    {
+      path: '/article/:id',
+      name: 'articleDetail',
+      props: true,
+      component: () => import('@/views/NavFunction/ArticleDetail.vue')
+    },
+    {
       path: '/personalCenter',
       component: () => import('@/views/LayOut/LayoutContainer.vue'),
       redirect: '/personalCenter/home',

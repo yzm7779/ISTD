@@ -17,12 +17,12 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="chat-item-user-left">
-    <div class="avatar-container-left">
-      <div class="username">ISTD</div>
+  <div class="left-bubble">
+    <div class="left-bubble-avatar">
+      <div class="left-bubble-username">ISTD</div>
       <el-avatar :size="50" :src="squareUrl" shape="square" />
     </div>
-    <div class="message-bubble-left chat-bubble-left">
+    <div class="left-bubble-content">
       这是您的诊断方案。 1，这是您的诊断方案 1，这是您的诊断方案
       1，这是您的诊断方案
       1，这是您的诊断方案1，这是您的诊断方案1，这是您的诊断方案
@@ -50,26 +50,32 @@ const props = defineProps({
 </template>
 
 <style scoped lang="scss">
-.chat-item-user-left {
-  display: flex;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  .avatar-container-left {
-    flex: 1;
-  }
-  .message-bubble-left {
-    flex: 11;
-    top: 40px;
-  }
-  .chat-bubble-left {
-    display: inline-block;
+.left-bubble {
+  display: grid;
+  height: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  .left-bubble-avatar {
     position: relative;
-    background-color: white;
+    justify-items: left;
+    .left-bubble-username {
+      position: relative;
+      left: 55px;
+      top: 10px;
+      font-size: 15px;
+      color: gray;
+    }
+  }
+  .left-bubble-content {
+    position: relative;
+    width: fit-content;
+    max-width: 65%;
     border-radius: 10px;
-    padding: 10px 15px;
-    margin-right: 80px;
-    margin-left: 10px;
-    width: auto;
+    background-color: wheat;
+    padding: 15px;
+    justify-items: left;
+    left: 8%;
+    bottom: 25px;
   }
 }
 </style>

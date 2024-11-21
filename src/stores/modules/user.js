@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { getFormattedDate } from '@/utils/dateUtils.js'
 
 export const useUserStore = defineStore(
   'big-user',
   () => {
+    const getId = (tempId) => {
+      getFormattedDate(tempId)
+    }
     const token = ref('')
     const registerModel = ref({
       phone: '',
@@ -48,21 +52,22 @@ export const useUserStore = defineStore(
 
     //增加聊天记录
     const addHistory = (newVal) => {
-      const temp = Date.now()
-      const date = new Date(temp) // 创建一个 Date 对象
-
-      // 格式化输出日期和时间
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0') // 月份从0开始，需要加1
-      const day = String(date.getDate()).padStart(2, '0')
-      const hours = String(date.getHours()).padStart(2, '0')
-      const minutes = String(date.getMinutes()).padStart(2, '0')
-      const seconds = String(date.getSeconds()).padStart(2, '0')
-
-      const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+      const formattedDateTime = ref('')
+      getId(formattedDateTime)
       allHistory.value.push({ id: formattedDateTime, chat: newVal })
       console.log('这是添加的值', newVal)
       console.log('这是所有的值', allHistory.value)
+    }
+    const allDoctor = ref([])
+    const addDoctor = (newDoctor) => {
+      const formattedDateTime = ref('')
+      getId(formattedDateTime)
+      if (!allDoctor.value.some((item) => item.doctor === newDoctor)) {
+        allDoctor.value.push({ id: formattedDateTime, doctor: newDoctor })
+      }
+    }
+    const deleteDoctor = () => {
+      allDoctor.value = []
     }
 
     return {
@@ -71,6 +76,7 @@ export const useUserStore = defineStore(
       allHistory,
       registerModel,
       registerType,
+      allDoctor,
       setToken,
       removeToken,
       setUser,
@@ -78,7 +84,9 @@ export const useUserStore = defineStore(
       setRegisterType,
       deleteHistory,
       deleteHistoryById,
-      addHistory
+      addHistory,
+      addDoctor,
+      deleteDoctor
     }
   },
   {

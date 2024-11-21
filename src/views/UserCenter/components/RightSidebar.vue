@@ -1,13 +1,18 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, ref, reactive, toRefs } from 'vue'
 const props = defineProps({
   content: {
     type: Array,
     required: true
   }
 })
+const state = reactive({
+  squareUrl:
+    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
+})
 
+const { squareUrl } = toRefs(state)
 const emit = defineEmits(['partnerSelect', 'historySelect'])
 const selectId = (id) => {
   emit('partnerSelect', id)
@@ -28,12 +33,15 @@ const selectId = (id) => {
         >
           <div>
             <div>
-              <img
-                src="https://i.postimg.cc/7Z3gDBxj/1734672413.jpg"
-                class="pic"
-              />
+              <el-avatar :src="squareUrl" class="pic" alt="" />
             </div>
-            <div class="name-item">{{ item.name + item.id }}</div>
+            <div class="chat-item">
+              <div class="chat-name">
+                <div style="font-size: 20px">{{ item.doctor }}</div>
+                <div style="margin-left: 40px">2024/10/23</div>
+              </div>
+              <div class="chat-content">这是聊天记录哈哈哈哈哈哈....</div>
+            </div>
           </div>
         </el-menu-item>
       </el-menu></el-scrollbar
@@ -45,30 +53,54 @@ const selectId = (id) => {
 .right-container {
   background-color: white;
   height: 102.3%;
-  width: 200px;
+  width: 250px;
   position: absolute;
   right: 0;
   top: 80px;
   .menu-item {
     display: flex;
     width: 100%;
-    border-style: dashed;
+    height: 70px;
+    border-style: solid;
     border-width: 1px;
-    border-radius: 2px;
+    border-radius: 5px;
     padding-right: 40px;
     margin-top: 2px;
     text-align: center;
     justify-content: center;
     align-items: center;
+    background-color: #e2e2e2;
     .pic {
-      width: 30%;
+      width: 60px;
+      height: 60px;
       position: absolute;
-      right: 70%;
+      right: 180px;
+      top: 5px;
+      left: 5px;
       border-radius: 5px;
     }
-    .name-item {
-      position: relative;
-      left: 60%;
+    .chat-item {
+      text-align: left;
+      position: absolute;
+      left: 70px;
+      height: 70px;
+      width: 180px;
+      top: 0;
+      .chat-name {
+        position: absolute;
+        top: -10px;
+        display: flex;
+        width: 180px;
+        height: 30px;
+      }
+      .chat-content {
+        flex-grow: 1;
+        text-align: left;
+        position: absolute;
+        top: 18px;
+        color: gray;
+        font-size: 12px;
+      }
     }
   }
 }

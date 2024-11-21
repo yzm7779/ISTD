@@ -5,6 +5,10 @@ import pinia from '@/stores/index.js'
 import { ElementPlus } from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 import '@/assets/main.scss'
+import axios from 'axios'
+
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api/' // 你的后端 API 地址
+axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 const app = createApp(App)
 
@@ -29,4 +33,3 @@ app.directive('disable-resize', {
     }
   }
 })
-

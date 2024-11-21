@@ -23,6 +23,15 @@ const toLogin = async () => {
   console.log('第一次点击按钮的值', isLogin.value)
 }
 
+const useStore = useDataStore()
+const toArticle = async () => {
+  if (useStore.state.hasLogin === false) {
+    ElMessage.error('请登录以使用该功能')
+    return
+  }
+  await router.push('/article')
+}
+
 const props = defineProps({
   message: String
 })
@@ -45,6 +54,51 @@ const decreaseFontSize = () => {
 const resetFontSize = () => {
   fontSize.value = 16
 }
+
+// 颜色模式切换
+const isDarkMode = ref(false)
+const toggleColorMode = () => {
+  isDarkMode.value = !isDarkMode.value
+  document.body.classList.toggle('dark-mode', isDarkMode.value)
+}
+// 语音播放
+const synth = window.speechSynthesis
+
+// 启用点击文本功能
+const enableTextClick = ref(false)
+
+const playText = (text) => {
+  if (synth.speaking) {
+    ElMessage.error('语音正在播放，请稍后...')
+    return
+  }
+  const utterance = new SpeechSynthesisUtterance(text)
+  synth.speak(utterance)
+}
+
+const startTextSelection = () => {
+  enableTextClick.value = true
+  document.body.style.cursor = 'pointer'
+  ElMessage.info('点击文本播放语音，点击任意空白区域取消此功能')
+}
+
+const stopTextSelection = () => {
+  enableTextClick.value = false
+  document.body.style.cursor = 'default'
+  ElMessage.info('文本选择已停止')
+}
+
+// 监听点击事件
+const handleClick = (event) => {
+  if (!enableTextClick.value) return
+
+  const target = event.target
+  if (target && target.textContent.trim() !== '') {
+    playText(target.textContent.trim())
+  } else {
+    ElMessage.warning('没有文本可以播放')
+  }
+}
 //只在指定路由中显示的按钮
 const route = useRoute()
 const isHomepage = computed(() => {
@@ -66,7 +120,7 @@ const isLogin = computed(() => dataStore.state.hasLogin)
 </script>
 
 <template>
-  <el-header style="background-color: white; width: 100vw">
+  <el-header class="header">
     <div class="nav-container">
       <div class="nav-left">
         <!--        <div class="connection-item" v-if="isHomepage" @click="sendIsDrawer">-->
@@ -80,19 +134,34 @@ const isLogin = computed(() => dataStore.state.hasLogin)
             @click="toLayout"
           />
         </el-tooltip>
-        <el-link :underline="false" class="nav-link">下载</el-link>
-        <el-link :underline="false" class="nav-link">专栏</el-link>
+        <el-link :underline="false" class="nav-link" @click="playText('下载')"
+          >下载</el-link
+        >
+        <el-link :underline="false" class="nav-link" @click="toArticle"
+          >专栏</el-link
+        >
         <el-link :underline="false" class="nav-link" @click="toHelp">
           帮助
         </el-link>
         <el-link :underline="false" class="nav-link">联系我们</el-link>
       </div>
-      <span class="word">遇到问题请先尝试刷新网页</span>
+      <span class="word" @click="playText('遇到问题请先尝试刷新网页')"
+        >遇到问题请先尝试刷新网页</span
+      >
       <div class="nav-right" v-show="!isLogin">
         <el-button round color="black" @click="toLogin">登录/注册</el-button>
       </div>
       <div class="nav-right" v-show="isLogin">
-        <div class="message">欢迎使用智影透诊！</div>
+        <div
+          class="message"
+          @click="
+            playText(
+              '欢迎使用智影透诊，我们在这里帮助您！请点击任意文本内容听相应语音'
+            )
+          "
+        >
+          欢迎使用智影透诊！
+        </div>
         <el-popover
           placement="bottom"
           title=""
@@ -110,6 +179,21 @@ const isLogin = computed(() => dataStore.state.hasLogin)
             >
             <el-button @click="increaseFontSize">＋</el-button>
           </div>
+          <div class="setting-item">
+            <el-button size="small" @click="toggleColorMode">
+              {{ isDarkMode ? '切换至亮色模式' : '切换至深色模式' }}
+            </el-button>
+          </div>
+          <div class="setting-item">
+            <el-button size="small" @click="startTextSelection"
+              >启用：点击文本播放语音</el-button
+            >
+          </div>
+          <div class="setting-item">
+            <el-button size="small" @click="stopTextSelection"
+              >停止：点击文本播放语音</el-button
+            >
+          </div>
         </el-popover>
 
         <el-tooltip
@@ -125,7 +209,14 @@ const isLogin = computed(() => dataStore.state.hasLogin)
 </template>
 
 <style scoped lang="scss">
+.header {
+  background-color: white;
+  width: 100vw;
+}
 .nav-container {
+  border-style: solid;
+  border-width: 1.25px;
+  border-radius: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -190,5 +281,20 @@ const isLogin = computed(() => dataStore.state.hasLogin)
 .word {
   color: lightgray;
   font-size: 15px;
+}
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 深色模式样式 */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+.header.dark-mode {
+  background-color: #1e1e1e;
+  box-shadow: none;
 }
 </style>

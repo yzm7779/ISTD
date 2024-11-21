@@ -11,7 +11,7 @@ export const userRegisterService = ({
   certificate,
   name
 }) => {
-  return instance.post('/reg', {
+  return instance.post('/api/reg', {
     phone,
     password,
     repassword,
@@ -23,7 +23,7 @@ export const userRegisterService = ({
 
 //登录，和数据库中的数据做校验
 export const userLoginService = ({ phone, password, code }) => {
-  return instance.post('/login', {
+  return instance.post('/api/login', {
     phone,
     password,
     code
